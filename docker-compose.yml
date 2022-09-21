@@ -1,0 +1,32 @@
+version: "3.7"
+x-redis-service: &redis-service
+  image: redis:6.2.7-alpine
+  restart: always
+services:
+  # 存放token:useId，用于用户鉴权
+  auth_redis:
+    <<: *redis-service
+    container_name: gateway-logic-match-auth-redis
+    ports:
+      - 63790:6379
+    volumes:
+     - ./auth_redis/data:/data
+     - ./auth_redis/conf/redis.conf:/etc/redis/redis.conf
+  # pubsub事件总线
+  event_redis:
+    <<: *redis-service
+    container_name: gateway-logic-match-event-bus-redis
+    ports:
+      - 63791:6379
+    volumes:
+     - ./event_bus_redis/data:/data
+     - ./event_bus_redis/conf/redis.conf:/etc/redis/redis.conf
+  # 存match#id:userInfo，表示已经加入匹配池
+  match_pool_redis:
+    <<: *redis-service
+    container_name: gateway-logic-match-match-pool-redis
+    ports:
+      - 63792:6379
+    volumes:
+     - ./match_pool_redis/data:/data
+     - ./match_pool_redis/conf/redis.conf:/etc/redis/redis.conf
